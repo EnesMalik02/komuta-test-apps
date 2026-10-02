@@ -11,14 +11,15 @@ import (
 )
 
 type Server struct {
-	DB     *pgxpool.Pool
-	Cache  *redis.Client
-	Queue  *amqp.Connection
+	DB    *pgxpool.Pool
+	Cache *redis.Client
+	Queue *amqp.Connection
 }
 
 func NewRouter(s *Server) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", s.health)
+	mux.HandleFunc("GET /stats", s.stats)
 	return withCORS(mux)
 }
 
@@ -47,4 +48,10 @@ func (s *Server) health(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(status)
+}
+
+func (s *Server) stats(w http.ResponseWriter, r *http.Request) {
+	n, _ := s.Cache.Get(r.Context(), "processed_count").Int()
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]int{"processed": n})
 }

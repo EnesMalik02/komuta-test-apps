@@ -1,3 +1,4 @@
+import { Messages } from "@/components/Messages";
 import { BackendStatus } from "@/components/BackendStatus";
 import { GO_API_URL, PY_API_URL } from "@/lib/api";
 
@@ -10,6 +11,7 @@ export default function Home() {
           <BackendStatus name="backend-go" baseUrl={GO_API_URL} />
           <BackendStatus name="backend-python" baseUrl={PY_API_URL} />
         </div>
+        <Messages />
       </main>
     </div>
   );

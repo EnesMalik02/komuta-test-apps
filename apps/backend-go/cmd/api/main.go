@@ -29,7 +29,6 @@ func main() {
 	}
 	defer rdb.Close()
 
-	// RabbitMQ addon still provisioning on Komuta — wire back in once RABBITMQ_URL is set.
 	var conn *amqp.Connection
 	if cfg.RabbitMQURL != "" {
 		conn, err = queue.Connect(cfg.RabbitMQURL)
@@ -37,6 +36,11 @@ func main() {
 			log.Fatalf("rabbitmq connect: %v", err)
 		}
 		defer conn.Close()
+		go func() {
+			if err := queue.Consume(conn, pool, rdb); err != nil {
+				log.Printf("consume: %v", err)
+			}
+		}()
 	}
 
 	srv := &httpapi.Server{DB: pool, Cache: rdb, Queue: conn}
