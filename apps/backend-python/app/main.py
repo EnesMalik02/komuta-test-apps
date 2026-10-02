@@ -20,6 +20,7 @@ class NewMessage(BaseModel):
 
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=["https://frontend-3a240e03.edge-5.komuta.app"],
     allow_origin_regex=r"http://localhost:\d+",
     allow_methods=["*"],
     allow_headers=["*"],
